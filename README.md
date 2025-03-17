@@ -1,4 +1,4 @@
-# Kafka Message Triage Dashboard
+# AI Message Triage Dashboard
 
 A Node.js application that monitors 9 different Kafka topics and republishes those messages to a browser via a single WebSocket connection.
 

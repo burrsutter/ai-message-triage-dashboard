@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fallback to default topics if fetch fails
         topics = [
             'topic1', 'topic2', 'topic3', 'topic4', 'topic5',
-            'topic6', 'topic7', 'topic8', 'topic9'
+            'topic6', 'topic7', 'topic8', 'topic9', 'topic10'
         ];
     }
     
@@ -108,7 +108,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                addMessage(data.topic, data.message, data.timestamp);
+                console.log(data.message)
+                const jsonData = JSON.parse(data.message);
+                console.log(jsonData.content)
+                addMessage(data.topic, jsonData.content, data.timestamp);
             } catch (error) {
                 console.error('Error parsing message:', error);
             }
@@ -143,11 +146,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         timeElement.textContent = date.toLocaleTimeString();
         messageElement.appendChild(timeElement);
         
+        
         // Add message to container
-        messagesContainer.appendChild(messageElement);
+        // messagesContainer.appendChild(messageElement);
+        messagesContainer.prepend(messageElement);
         
         // Auto-scroll to bottom
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
         // Update counter
         messageCounters[topic]++;

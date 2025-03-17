@@ -20,7 +20,8 @@ const topics = [
   process.env.TOPIC_6 || 'topic6',
   process.env.TOPIC_7 || 'topic7',
   process.env.TOPIC_8 || 'topic8',
-  process.env.TOPIC_9 || 'topic9'
+  process.env.TOPIC_9 || 'topic9',
+  process.env.TOPIC_10 || 'topic10'
 ];
 
 // Initialize Kafka client

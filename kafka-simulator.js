@@ -14,17 +14,12 @@ const kafkaConfig = {
   brokers: [process.env.KAFKA_BROKER || 'localhost:9092'],
 };
 
-const topics = [
-  process.env.TOPIC_1 || 'topic1',
-  process.env.TOPIC_2 || 'topic2',
-  process.env.TOPIC_3 || 'topic3',
-  process.env.TOPIC_4 || 'topic4',
-  process.env.TOPIC_5 || 'topic5',
-  process.env.TOPIC_6 || 'topic6',
-  process.env.TOPIC_7 || 'topic7',
-  process.env.TOPIC_8 || 'topic8',
-  process.env.TOPIC_9 || 'topic9'
-];
+const topics = process.env.KAFKA_TOPICS
+  ? process.env.KAFKA_TOPICS.split(',').map((topic) => topic.trim()).filter(Boolean)
+  : Array.from(
+      { length: 10 },
+      (_, index) => process.env[`TOPIC_${index + 1}`] || `topic${index + 1}`,
+    );
 
 // Sample message templates for different topics
 const messageTemplates = {

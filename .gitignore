@@ -111,7 +111,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# The dashboard UI in public/ is application source and must remain tracked.
 
 # Storybook build outputs
 .out

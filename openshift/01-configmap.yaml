@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: message-triage-dashboard
+  namespace: message-triage
+  labels:
+    app.kubernetes.io/name: message-triage-dashboard
+    app.kubernetes.io/part-of: ai-message-triage
+data:
+  PORT: "3000"
+  KAFKA_BROKER: message-triage-kafka-kafka-bootstrap.message-triage.svc:9092
+  KAFKA_CLIENT_ID: message-triage-dashboard
+  KAFKA_CONSUMER_GROUP_ID: message-triage-dashboard-group
+  KAFKA_TOPICS: intake,structured,cleared,ready,support,finance,website,outflow,review,sales

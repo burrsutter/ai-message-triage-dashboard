@@ -22,9 +22,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // WebSocket connection
     let socket = null;
+    let shouldReconnect = true;
+    let serverSessionId = null;
     
     // Message counters for each topic
     const messageCounters = {};
+
+    // Keep Kafka topic identifiers unchanged while making pipeline ownership
+    // explicit in the dashboard.
+    const topicLabels = {
+        cleared: 'guardian cleared',
+        ready: 'customer ready',
+    };
     
     // Initialize the dashboard with topic panels
     function initializeDashboard() {
@@ -41,7 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Create topic name
             const topicName = document.createElement('span');
             topicName.className = 'topic-name';
-            topicName.textContent = topic;
+            topicName.textContent = topicLabels[topic] || topic;
+            topicName.title = `Kafka topic: ${topic}`;
             
             // Create message counter
             const counter = document.createElement('span');
@@ -97,6 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             connectionStatus.className = 'connection-status disconnected';
             connectBtn.textContent = 'Connect';
             socket = null;
+            if (shouldReconnect) {
+                window.setTimeout(connectWebSocket, 3000);
+            }
         };
         
         socket.onerror = (error) => {
@@ -108,10 +121,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                console.log(data.message)
-                const jsonData = JSON.parse(data.message);
-                console.log(jsonData.content)
-                addMessage(data.topic, jsonData.content, data.timestamp);
+                if (data.type === 'session') {
+                    if (serverSessionId && serverSessionId !== data.sessionId) {
+                        clearAllMessages();
+                    }
+                    serverSessionId = data.sessionId;
+                    return;
+                }
+                let content = data.message;
+                try {
+                    const jsonData = JSON.parse(data.message);
+                    content = jsonData.content ?? JSON.stringify(jsonData, null, 2);
+                } catch {
+                    // Simulator and diagnostic messages can be plain text.
+                }
+                addMessage(data.topic, content, data.timestamp);
             } catch (error) {
                 console.error('Error parsing message:', error);
             }
@@ -120,6 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Disconnect from WebSocket server
     function disconnectWebSocket() {
+        shouldReconnect = false;
         if (socket) {
             socket.close();
         }
@@ -185,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (socket && socket.readyState !== WebSocket.CLOSED) {
             disconnectWebSocket();
         } else {
+            shouldReconnect = true;
             connectWebSocket();
         }
     });

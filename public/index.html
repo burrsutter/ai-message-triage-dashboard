@@ -54,6 +54,8 @@
             border-radius: 4px;
             border-left: 3px solid #4caf50;
             font-size: 14px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
         .message-time {
             font-size: 11px;
@@ -103,6 +105,19 @@
         }
         .controls button:hover {
             background-color: #1976d2;
+        }
+        @media (max-width: 1000px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 650px) {
+            body {
+                padding: 10px;
+            }
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
